@@ -11,6 +11,7 @@ from logging import Formatter, FileHandler
 from flask_wtf import Form
 from forms import *
 from models import *
+from services import *
 
 #----------------------------------------------------------------------------#
 # Filters.
@@ -40,29 +41,45 @@ def index():
 
 @app.route('/venues')
 def venues():
-  # TODO: replace with real venues data.
-  #       num_shows should be aggregated based on number of upcoming shows per venue.
-  data=[{
-    "city": "San Francisco",
-    "state": "CA",
-    "venues": [{
-      "id": 1,
-      "name": "The Musical Hop",
-      "num_upcoming_shows": 0,
-    }, {
-      "id": 3,
-      "name": "Park Square Live Music & Coffee",
-      "num_upcoming_shows": 1,
-    }]
-  }, {
-    "city": "New York",
-    "state": "NY",
-    "venues": [{
-      "id": 2,
-      "name": "The Dueling Pianos Bar",
-      "num_upcoming_shows": 0,
-    }]
-  }]
+  data = []
+  
+  # get all venues
+  venues = Venue.query.all()
+
+  # Use set so there are no duplicate venues
+  locations = set()
+
+  for venue in venues:
+      # add city/state tuples
+    locations.add((venue.city, venue.state))
+
+  # for each unique city/state, add venues
+  for location in locations:
+    data.append({
+        "city": location[0],
+        "state": location[1],
+        "venues": []
+    })
+
+  for venue in venues:
+    num_upcoming_shows = 0
+
+    shows = Show.query.filter_by(venue_id=venue.id).all()
+
+    # get current date to filter num_upcoming_shows
+    current_date = datetime.now()
+
+    for show in shows:
+      if show.start_time > current_date:
+          num_upcoming_shows += 1
+
+    for venue_location in data:
+      if venue.state == venue_location['state'] and venue.city == venue_location['city']:
+        venue_location['venues'].append({
+            "id": venue.id,
+            "name": venue.name,
+            "num_upcoming_shows": num_upcoming_shows
+        })
   return render_template('pages/venues.html', areas=data)
 
 @app.route('/venues/search', methods=['POST'])
