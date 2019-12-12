@@ -11,8 +11,6 @@ from logging import Formatter, FileHandler
 from flask_wtf import Form
 from forms import *
 from models import *
-from services import *
-
 #----------------------------------------------------------------------------#
 # Filters.
 #----------------------------------------------------------------------------#
@@ -84,18 +82,15 @@ def venues():
 
 @app.route('/venues/search', methods=['POST'])
 def search_venues():
-  # TODO: implement search on artists with partial string search. Ensure it is case-insensitive.
-  # seach for Hop should return "The Musical Hop".
-  # search for "Music" should return "The Musical Hop" and "Park Square Live Music & Coffee"
+  text = request.form.get('search_term', '')
+  result = Venue.query.filter(Venue.name.ilike(f'%{text}%'))
+
   response={
-    "count": 1,
-    "data": [{
-      "id": 2,
-      "name": "The Dueling Pianos Bar",
-      "num_upcoming_shows": 0,
-    }]
+    "count": result.count(),
+    "data": result
   }
-  return render_template('pages/search_venues.html', results=response, search_term=request.form.get('search_term', ''))
+  print('response', response) # debugging
+  return render_template('pages/search_venues.html', results=response, search_term=text)
 
 @app.route('/venues/<int:venue_id>')
 def show_venue(venue_id):
