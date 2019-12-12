@@ -130,8 +130,6 @@ def show_venue(venue_id):
     "upcoming_shows_count": len(upcoming_shows)
   }
 
-  print('ssssssssssssss',data)
-
   return render_template('pages/show_venue.html', venue=data)
 
 #  Create Venue
@@ -173,7 +171,22 @@ def delete_venue(venue_id):
 
   # BONUS CHALLENGE: Implement a button to delete a Venue on a Venue Page, have it so that
   # clicking that button delete it from the db then redirect the user to the homepage
-  return None
+  try:
+
+    venue = Venue.query.get(venue_id)
+    venue_name = venue.name
+
+    db.session.delete(venue)
+    db.session.commit()
+
+    flash('Venue ' + venue_name + ' was deleted')
+  except:
+    flash('an error occured and Venue ' + venue_name + ' was not deleted')
+    db.session.rollback()
+  finally:
+    db.session.close()
+
+  return redirect(url_for('index'))
 
 #  Artists
 #  ----------------------------------------------------------------
