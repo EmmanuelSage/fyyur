@@ -123,6 +123,7 @@ def show_venue(venue_id):
     "website": venue.website,
     "facebook_link": venue.facebook_link,
     "seeking_talent": venue.seeking_talent,
+    "seeking_description":venue.seeking_description,
     "image_link": venue.image_link,
     "past_shows": past_shows,
     "upcoming_shows": upcoming_shows,
@@ -146,8 +147,9 @@ def create_venue_submission():
     # get form data and create 
     form = VenueForm()
     venue = Venue(name=form.name.data, city=form.city.data, state=form.state.data, address=form.address.data,
-                  phone=form.phone.data, image_link=form.image_link.data,
-                  genres=form.genres.data, facebook_link=form.facebook_link.data)
+                  phone=form.phone.data, image_link=form.image_link.data,genres=form.genres.data, 
+                  facebook_link=form.facebook_link.data, seeking_description=form.seeking_description.data,
+                  website=form.website.data, seeking_talent=form.seeking_talent.data)
     
     # commit session to database
     db.session.add(venue)
@@ -336,7 +338,7 @@ def edit_venue(venue_id):
     "website": venue.website,
     "facebook_link": venue.facebook_link,
     "seeking_talent": venue.seeking_talent,
-    # "seeking_description": ,
+    "seeking_description": venue.seeking_description,
     "image_link": venue.image_link,
   }
   
@@ -361,8 +363,7 @@ def edit_venue_submission(venue_id):
     venue.website = form.website.data
     venue.image_link = form.image_link.data
     venue.seeking_talent = form.seeking_talent.data
-
-    # venue.seeking_description = form.seeking_description.data
+    venue.seeking_description = form.seeking_description.data
 
     db.session.commit()
     flash('Venue ' + name + ' has been updated')
