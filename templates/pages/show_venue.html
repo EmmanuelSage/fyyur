@@ -33,7 +33,8 @@
         target="_blank">{{ venue.facebook_link }}</a>{% else %}No Facebook Link{% endif %}
     </p>
     <section>
-      <button id="edit_venue" class="btn btn-primary btn-lg" data-id="{{ venue.id }}">Edit</button>
+      <button id="edit_venue" onclick="editVenue(event)" class="btn btn-primary btn-lg"
+        data-id="{{ venue.id }}">Edit</button>
       <button id="delete_venue" onclick="deleteVenue(event)" class="btn btn-primary btn-lg"
         data-id="{{ venue.id }}">Delete</button>
     </section>
@@ -86,13 +87,26 @@
 </section>
 <script>
   function deleteVenue(e) {
-    console.log('clicked')
     const id = e.target.dataset.id
     fetch(`/venues/${id}`, {
       method: 'DELETE'
     })
       .then(response => {
         window.location.href = response.url;
+      })
+      .catch(error => {
+        console.log(error);
+      })
+  }
+
+  function editVenue(e) {
+    const id = e.target.dataset.id
+
+    fetch(`/venues/${id}/edit`, {
+      method: 'GET'
+    })
+      .then(response => {
+        window.location.href = `/venues/${id}/edit`;
       })
       .catch(error => {
         console.log(error);
