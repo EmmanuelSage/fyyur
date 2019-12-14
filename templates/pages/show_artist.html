@@ -84,7 +84,7 @@
 <script>
   function deleteArtist(e) {
     const id = e.target.dataset.id
-    fetch(`/venues/${id}`, {
+    fetch(`/artist/${id}`, {
       method: 'DELETE'
     })
       .then(response => {
