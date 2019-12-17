@@ -169,7 +169,7 @@ def create_venue_submission():
 @app.route('/venues/<venue_id>', methods=['DELETE'])
 def delete_venue(venue_id):
   try:
-
+    # Get venue by ID
     venue = Venue.query.get(venue_id)
     venue_name = venue.name
 
@@ -189,7 +189,6 @@ def delete_venue(venue_id):
 #  ----------------------------------------------------------------
 @app.route('/artists')
 def artists():
-  # TODO: replace with real data returned from querying the database
   data = []
 
   artists = Artist.query.all()
@@ -204,6 +203,8 @@ def artists():
 @app.route('/artists/search', methods=['POST'])
 def search_artists():
   search_term = request.form.get('search_term', '')
+
+  # filter artists by case insensitive search
   result = Artist.query.filter(Artist.name.ilike(f'%{search_term}%'))
 
   response={
@@ -221,6 +222,7 @@ def show_artist(artist_id):
   upcoming_shows = []
   current_time = datetime.now()
 
+  # Filter shows by upcoming and past
   for show in shows:
     data = {
           "venue_id": show.venue_id,
@@ -321,8 +323,6 @@ def edit_venue(venue_id):
 
 @app.route('/venues/<int:venue_id>/edit', methods=['POST'])
 def edit_venue_submission(venue_id):
-  # TODO: take values from the form submitted, and update existing
-  # venue record with ID <venue_id> using the new attributes
   try:
     form = VenueForm()
     venue = Venue.query.get(venue_id)
@@ -362,12 +362,14 @@ def create_artist_form():
 def create_artist_submission():
   try:
     form = ArtistForm()
+
     artist = Artist(name=form.name.data, city=form.city.data, state=form.city.data,
                     phone=form.phone.data, genres=form.genres.data, 
                     image_link=form.image_link.data, facebook_link=form.facebook_link.data)
     
     db.session.add(artist)
     db.session.commit()
+
     flash('Artist ' + request.form['name'] + ' was successfully listed!')
   except:
     db.session.rollback()
@@ -402,7 +404,6 @@ def delete_artist(artist_id):
 
 @app.route('/shows')
 def shows():
-  current_time = datetime.now()
   shows = Show.query.order_by(db.desc(Show.start_time))
 
   data = []
@@ -421,7 +422,7 @@ def shows():
 
 @app.route('/shows/create')
 def create_shows():
-  # renders form. do not touch.
+  # renders form
   form = ShowForm()
   return render_template('forms/new_show.html', form=form)
 
